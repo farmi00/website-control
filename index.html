@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,user-scalable=no, initial-scale=1"
+    />
+    <title>MAKANAN HAS KEI MALUKU TENGGARA</title>
+    <style>
+      /* Reset & base */
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Arial", sans-serif;
+        background: #fff8e1;
+        color: #4e342e;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      header {
+        background-color: #ff7043;
+        color: white;
+        padding: 20px 15px;
+        text-align: center;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+      }
+      header h1 {
+        margin: 0;
+        font-weight: 900;
+        font-size: 2.4rem;
+      }
+      nav {
+        margin-top: 12px;
+      }
+      nav button {
+        cursor: pointer;
+        background: transparent;
+        border: none;
+        color: white;
+        font-weight: 700;
+        margin: 0 12px;
+        font-size: 1.1rem;
+        border-radius: 30px;
+        padding: 8px 20px;
+        transition: 0.3s ease background-color;
+      }
+      nav button.active,
+      nav button:hover {
+        background-color: #d84315;
+      }
+      main {
+        flex-grow: 1;
+        max-width: 950px;
+        width: 95%;
+        margin: 20px auto 40px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 14px rgba(0, 0, 0, 0.1);
+        padding: 20px 25px;
+      }
+      .section-title {
+        color: #bf360c;
+        margin-bottom: 20px;
+        font-weight: 900;
+        font-size: 1.8rem;
+        border-bottom: 3px solid #ff7043;
+        padding-bottom: 8px;
+      }
+
+      /* Food cards grid */
+      #food-list {
+        display: grid;
+        grid-gap: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }
+      .food-card {
+        box-shadow: 0 4px 16px rgb(0 0 0 / 0.1);
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: box-shadow 0.3s ease;
+      }
+      .food-card:hover {
+        box-shadow: 0 8px 32px rgb(0 0 0 / 0.15);
+      }
+      .food-card img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+      }
+      .food-info {
+        padding: 14px 16px 18px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .food-info h3 {
+        margin: 0 0 10px;
+        color: #d84315;
+        font-weight: 700;
+        font-size: 1.3rem;
+      }
+      .food-info p.desc {
+        flex-grow: 1;
+        font-size: 0.93rem;
+        color: #5d4037;
+        line-height: 1.3;
+      }
+      .food-info .rating-stars {
+        margin-top: 10px;
+        font-size: 1rem;
+        color: #ffa000;
+        user-select: none;
+      }
+      .food-info .comments-preview {
+        margin-top: 8px;
+        font-size: 0.85rem;
+        color: #6d4c41;
+        max-height: 3.5em;
+        overflow: hidden;
+      }
+
+      /* Forms */
+      form label {
+        display: block;
+        margin: 12px 0 6px;
+        font-weight: 700;
+        color: #6d4c41;
+      }
+      input[type="text"],
+      input[type="password"],
+      textarea,
+      select {
+        width: 100%;
+        font-size: 1rem;
+        padding: 8px 10px;
+        border-radius: 6px;
+        border: 1.8px solid #c7a36f;
+        font-family: inherit;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 70px;
+      }
+      input[type="file"] {
+        margin-top: 6px;
+      }
+      button[type="submit"],
+      button.logout-btn,
+      button.delete-btn {
+        margin-top: 18px;
+        background-color: #ff7043;
+        border: none;
+        border-radius: 30px;
+        color: white;
+        font-weight: 900;
+        cursor: pointer;
+        padding: 12px 26px;
+        font-size: 1.1rem;
+        transition: background-color 0.3s ease;
+      }
+      button[type="submit"]:hover,
+      button.logout-btn:hover,
+      button.delete-btn:hover {
+        background-color: #d84315;
+      }
+      .error-msg {
+        margin: 6px 0 0;
+        color: #b71c1c;
+        font-weight: 700;
+      }
+      /* Rating + comment form */
+      .user-food-list form {
+        margin-top: 15px;
+      }
+      .user-food-list label {
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-top: 12px;
+        display: block;
+      }
+      .user-food-list select,
+      .user-food-list textarea {
+        font-size: 1rem;
+      }
+      .comments-list {
+        margin-top: 12px;
+        font-size: 0.9rem;
+        color: #4e342e;
+        max-height: 80px;
+        overflow-y: auto;
+        border-top: 1px solid #d7ccc8;
+        padding-top: 8px;
+      }
+      .comments-list p {
+        margin: 3px 0;
+      }
+      .comments-list strong {
+        color: #bf360c;
+      }
+      .comments-list span.user {
+        font-weight: 700;
+      }
+      #user-info {
+        text-align: right;
+        margin-bottom: 15px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #d84315;
+      }
+      .admin-food-item {
+        border: 1px solid #d7ccc8;
+        border-radius: 12px;
+        padding: 14px 16px;
+        box-shadow: 0 2px 10px rgb(0 0 0 / 0.05);
+        margin-bottom: 15px;
+        display: flex;
+        gap: 14px;
+      }
+      .admin-food-item img {
+        height: 100px;
+        width: 130px;
+        border-radius: 10px;
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+      .admin-food-detail {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .admin-food-detail h4 {
+        margin: 0 0 8px;
+        font-weight: 700;
+        color: #d84315;
+      }
+      .admin-food-detail p {
+        margin: 0 0 10px;
+        color: #5d4037;
+        font-size: 0.9rem;
+        white-space: pre-wrap;
+      }
+      .admin-food-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        justify-content: flex-start;
+      }
+      @media (max-width: 720px) {
+        .admin-food-item {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+        .admin-food-item img {
+          width: 90%;
+          height: auto;
+        }
+        .admin-food-actions {
+          flex-direction: row;
+          justify-content: center;
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 520px) {
+        nav button {
+          padding: 7px 14px;
+          font-size: 1rem;
+          margin: 0 8px;
+        }
+        main {
+          width: 95vw;
+          padding: 15px 15px 30px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Makanan Daerah Kepuluan Kei Maluku Tenggara</h1>
+      <nav>
+        <button id="nav-home" class="active">Beranda</button>
+        <button id="nav-admin">Admin</button>
+        <button id="nav-login">User Login</button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Home Section -->
+      <section id="section-home">
+        <h2 class="section-title">
+          Selamat Datang Di Makanan Daerah Kepulauan Kei
+        </h2>
+        <div id="food-list">
+          <!-- Food cards will appear here -->
+        </div>
+      </section>
+
+      <!-- Admin Section -->
+      <section id="section-admin" style="display: none">
+        <h2 class="section-title">Admin - Kontrol Makanan</h2>
+
+        <form id="form-admin-upload" autocomplete="off">
+          <label for="admin-food-name">Nama Makanan</label>
+          <input
+            type="text"
+            id="admin-food-name"
+            required
+            placeholder="Masukkan nama makanan"
+          />
+
+          <label for="admin-food-desc">Deskripsi</label>
+          <textarea
+            id="admin-food-desc"
+            required
+            placeholder="Deskripsi makanan"
+          ></textarea>
+
+          <label for="admin-food-photo">Foto (JPG/PNG)</label>
+          <input
+            type="file"
+            id="admin-food-photo"
+            accept="image/jpeg,image/png"
+            required
+          />
+
+          <button type="submit">Tambah Makanan</button>
+          <p class="error-msg" id="admin-error" style="display: none"></p>
+        </form>
+
+        <h3 style="margin-top: 30px; color: #bf360c">Daftar Makanan</h3>
+        <div id="admin-food-list"></div>
+      </section>
+
+      <!-- Login Section -->
+      <section id="section-login" style="display: none">
+        <h2 class="section-title">User Login</h2>
+        <form id="form-login" autocomplete="off">
+          <label for="login-username">Username</label>
+          <input
+            type="text"
+            id="login-username"
+            required
+            placeholder="Username"
+          />
+
+          <label for="login-password">Password</label>
+          <input
+            type="password"
+            id="login-password"
+            required
+            placeholder="Password"
+          />
+
+          <button type="submit">Login</button>
+          <p style="margin-top: 14px">
+            Belum punya akun? <a href="#" id="link-register">Daftar di sini</a>
+          </p>
+          <p class="error-msg" id="login-error" style="display: none"></p>
+        </form>
+      </section>
+
+      <!-- Register Section -->
+      <section id="section-register" style="display: none">
+        <h2 class="section-title">Daftar Akun Baru</h2>
+        <form id="form-register" autocomplete="off">
+          <label for="register-username">Username</label>
+          <input
+            type="text"
+            id="register-username"
+            required
+            placeholder="Username"
+          />
+
+          <label for="register-password">Password</label>
+          <input
+            type="password"
+            id="register-password"
+            required
+            placeholder="Password"
+          />
+
+          <label for="register-password2">Konfirmasi Password</label>
+          <input
+            type="password"
+            id="register-password2"
+            required
+            placeholder="Konfirmasi Password"
+          />
+
+          <button type="submit">Daftar</button>
+          <p style="margin-top: 14px">
+            Sudah punya akun? <a href="#" id="link-login">Login di sini</a>
+          </p>
+          <p class="error-msg" id="register-error" style="display: none"></p>
+        </form>
+      </section>
+
+      <!-- User Panel Section -->
+      <section
+        id="section-userpanel"
+        style="display: none; max-width: 900px; margin: 0 auto"
+      >
+        <div id="user-info">
+          <!-- User greeting and logout button -->
+        </div>
+        <h2 class="section-title">Makanan Daerah</h2>
+        <div id="user-food-list" class="user-food-list">
+          <!-- User's food list with rating and comment forms -->
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (() => {
+        // Elements
+        const navHome = document.getElementById("nav-home");
+        const navAdmin = document.getElementById("nav-admin");
+        const navLogin = document.getElementById("nav-login");
+
+        const secHome = document.getElementById("section-home");
+        const secAdmin = document.getElementById("section-admin");
+        const secLogin = document.getElementById("section-login");
+        const secRegister = document.getElementById("section-register");
+        const secUserPanel = document.getElementById("section-userpanel");
+
+        const foodListDiv = document.getElementById("food-list");
+        const userFoodListDiv = document.getElementById("user-food-list");
+
+        const formAdmin = document.getElementById("form-admin-upload");
+        const formLogin = document.getElementById("form-login");
+        const formRegister = document.getElementById("form-register");
+
+        const adminError = document.getElementById("admin-error");
+        const loginError = document.getElementById("login-error");
+        const registerError = document.getElementById("register-error");
+
+        const userInfoDiv = document.getElementById("user-info");
+
+        const linkRegister = document.getElementById("link-register");
+        const linkLogin = document.getElementById("link-login");
+
+        const adminFoodListDiv = document.getElementById("admin-food-list");
+
+        // Storage keys
+        const STORAGE_FOODS = "katalog_makanan_daerah_foods";
+        const STORAGE_USERS = "katalog_makanan_daerah_users";
+        const STORAGE_CURRENT_USER = "katalog_makanan_daerah_currentUser";
+
+        // Admin fixed credentials
+        const ADMIN_USER = "admin";
+        const ADMIN_PASS = "admin123";
+
+        // Current logged in user state
+        let currentUser = null;
+        let isAdminLoggedIn = false;
+
+        // Utility for loading and saving
+        function loadFoods() {
+          let data = localStorage.getItem(STORAGE_FOODS);
+          if (!data) return [];
+          try {
+            return JSON.parse(data);
+          } catch (e) {
+            return [];
+          }
+        }
+        function saveFoods(foods) {
+          localStorage.setItem(STORAGE_FOODS, JSON.stringify(foods));
+        }
+        function loadUsers() {
+          let data = localStorage.getItem(STORAGE_USERS);
+          if (!data) return [];
+          try {
+            return JSON.parse(data);
+          } catch (e) {
+            return [];
+          }
+        }
+        function saveUsers(users) {
+          localStorage.setItem(STORAGE_USERS, JSON.stringify(users));
+        }
+        function loadCurrentUser() {
+          return localStorage.getItem(STORAGE_CURRENT_USER);
+        }
+        function saveCurrentUser(username) {
+          if (username) localStorage.setItem(STORAGE_CURRENT_USER, username);
+          else localStorage.removeItem(STORAGE_CURRENT_USER);
+        }
+
+        // Generate unique food ID
+        function generateFoodId() {
+          return "food_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
+        }
+
+        // Page navigation helpers
+        function clearActiveNav() {
+          navHome.classList.remove("active");
+          navAdmin.classList.remove("active");
+          navLogin.classList.remove("active");
+        }
+        function hideAllSections() {
+          secHome.style.display = "none";
+          secAdmin.style.display = "none";
+          secLogin.style.display = "none";
+          secRegister.style.display = "none";
+          secUserPanel.style.display = "none";
+        }
+
+        function showSection(name) {
+          hideAllSections();
+          clearActiveNav();
+
+          if (name === "home") {
+            secHome.style.display = "";
+            navHome.classList.add("active");
+          } else if (name === "admin") {
+            if (isAdminLoggedIn) {
+              secAdmin.style.display = "";
+              navAdmin.classList.add("active");
+              renderAdminFoodList();
+            } else {
+              if (promptAdminLogin()) {
+                isAdminLoggedIn = true;
+                secAdmin.style.display = "";
+                navAdmin.classList.add("active");
+                renderAdminFoodList();
+              } else {
+                alert("Gagal login admin.");
+                showSection("home");
+                return;
+              }
+            }
+          } else if (name === "login") {
+            if (currentUser) {
+              showSection("userpanel");
+            } else {
+              secLogin.style.display = "";
+              navLogin.classList.add("active");
+            }
+          } else if (name === "register") {
+            secRegister.style.display = "";
+          } else if (name === "userpanel") {
+            if (currentUser) {
+              secUserPanel.style.display = "";
+              userInfoDiv.innerHTML = `Halo, <b>${currentUser}</b>! <button class="logout-btn" id="btn-logout">Logout</button>`;
+              document.getElementById("btn-logout").onclick = () => {
+                logoutUser();
+              };
+              navLogin.classList.add("active");
+              renderUserFoodList();
+            } else {
+              showSection("login");
+            }
+          }
+        }
+
+        // Render food on home page (readonly cards)
+        function renderHomeFoodList() {
+          const foods = loadFoods();
+          if (foods.length === 0) {
+            foodListDiv.innerHTML = "<p>Tidak ada makanan terdaftar.</p>";
+            return;
+          }
+          foodListDiv.innerHTML = "";
+          foods.forEach((food) => {
+            const avgRating =
+              food.ratings && food.ratings.length > 0
+                ? (
+                    food.ratings.reduce((a, v) => a + v.score, 0) /
+                    food.ratings.length
+                  ).toFixed(1)
+                : "Belum Dinilai";
+            const starsCount =
+              food.ratings && food.ratings.length > 0
+                ? Math.round(avgRating)
+                : 0;
+            const stars = "★".repeat(starsCount) + "☆".repeat(5 - starsCount);
+
+            let commentsPreview = "Belum ada komentar";
+            if (food.comments && food.comments.length > 0) {
+              commentsPreview =
+                food.comments
+                  .slice(0, 2)
+                  .map((c) => `<b>${c.user}:</b> ${c.comment}`)
+                  .join("<br>") + (food.comments.length > 2 ? "<br>…" : "");
+            }
+
+            const card = document.createElement("article");
+            card.className = "food-card";
+            card.innerHTML = `
+        <img src="${food.photo}" alt="${food.name}" />
+        <div class="food-info">
+          <h3>${food.name}</h3>
+          <p class="desc">${
+            food.description.length > 130
+              ? food.description.slice(0, 130) + "..."
+              : food.description
+          }</p>
+          <div class="rating-stars" title="${avgRating} dari 5">${stars} (${avgRating})</div>
+          <div class="comments-preview">${commentsPreview}</div>
+        </div>
+      `;
+            foodListDiv.appendChild(card);
+          });
+        }
+
+        // Prompt admin login
+        function promptAdminLogin() {
+          const user = prompt("Masukkan username admin:");
+          const pass = prompt("Masukkan password admin:");
+          return user === ADMIN_USER && pass === ADMIN_PASS;
+        }
+
+        // Admin form submit
+        formAdmin.addEventListener("submit", (e) => {
+          e.preventDefault();
+          adminError.style.display = "none";
+
+          const name = document.getElementById("admin-food-name").value.trim();
+          const desc = document.getElementById("admin-food-desc").value.trim();
+          const fileInput = document.getElementById("admin-food-photo");
+
+          if (!name || !desc || fileInput.files.length === 0) {
+            adminError.textContent = "Semua kolom dan foto harus diisi.";
+            adminError.style.display = "block";
+            return;
+          }
+          const file = fileInput.files[0];
+          if (!file.type.match("image/jpeg") && !file.type.match("image/png")) {
+            adminError.textContent = "Jenis file harus JPG atau PNG.";
+            adminError.style.display = "block";
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            const photoDataURL = event.target.result;
+            const foods = loadFoods();
+            foods.push({
+              id: generateFoodId(),
+              name: name,
+              description: desc,
+              photo: photoDataURL,
+              ratings: [],
+              comments: [],
+            });
+            saveFoods(foods);
+            formAdmin.reset();
+            alert("Makanan berhasil ditambahkan!");
+            renderHomeFoodList();
+            renderAdminFoodList();
+            if (currentUser) {
+              renderUserFoodList();
+            }
+          };
+          reader.readAsDataURL(file);
+        });
+
+        // Render admin food list with delete buttons
+        function renderAdminFoodList() {
+          const foods = loadFoods();
+          if (foods.length === 0) {
+            adminFoodListDiv.innerHTML = "<p>Belum ada makanan terdaftar.</p>";
+            return;
+          }
+          adminFoodListDiv.innerHTML = "";
+          foods.forEach((food) => {
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "admin-food-item";
+            itemDiv.innerHTML = `
+        <img src="${food.photo}" alt="${food.name}" />
+        <div class="admin-food-detail">
+          <h4>${food.name}</h4>
+          <p>${food.description}</p>
+        </div>
+        <div class="admin-food-actions">
+          <button class="delete-btn" data-id="${food.id}">Hapus</button>
+        </div>
+      `;
+            adminFoodListDiv.appendChild(itemDiv);
+          });
+          // Attach delete event handlers
+          adminFoodListDiv.querySelectorAll(".delete-btn").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const id = e.target.dataset.id;
+              if (confirm("Yakin ingin menghapus makanan ini?")) {
+                deleteFood(id);
+              }
+            });
+          });
+        }
+
+        function deleteFood(foodId) {
+          let foods = loadFoods();
+          foods = foods.filter((f) => f.id !== foodId);
+          saveFoods(foods);
+          alert("Makanan berhasil dihapus.");
+          renderAdminFoodList();
+          renderHomeFoodList();
+          if (currentUser) {
+            renderUserFoodList();
+          }
+        }
+
+        // Register user form submit
+        formRegister.addEventListener("submit", (e) => {
+          e.preventDefault();
+          registerError.style.display = "none";
+
+          const u = document.getElementById("register-username").value.trim();
+          const p = document.getElementById("register-password").value;
+          const p2 = document.getElementById("register-password2").value;
+
+          if (u.length < 3) {
+            registerError.textContent = "Username minimal 3 karakter.";
+            registerError.style.display = "block";
+            return;
+          }
+          if (p.length < 5) {
+            registerError.textContent = "Password minimal 5 karakter.";
+            registerError.style.display = "block";
+            return;
+          }
+          if (p !== p2) {
+            registerError.textContent = "Password dan konfirmasi harus sama.";
+            registerError.style.display = "block";
+            return;
+          }
+
+          const users = loadUsers();
+          if (
+            users.find(
+              (user) => user.username.toLowerCase() === u.toLowerCase()
+            )
+          ) {
+            registerError.textContent = "Username sudah terpakai.";
+            registerError.style.display = "block";
+            return;
+          }
+          users.push({ username: u, password: p });
+          saveUsers(users);
+          alert("Registrasi berhasil, silakan login!");
+          formRegister.reset();
+          showSection("login");
+        });
+
+        // Login user form submit
+        formLogin.addEventListener("submit", (e) => {
+          e.preventDefault();
+          loginError.style.display = "none";
+
+          const u = document.getElementById("login-username").value.trim();
+          const p = document.getElementById("login-password").value;
+
+          if (u === ADMIN_USER && p === ADMIN_PASS) {
+            alert("Ini adalah akun admin. Gunakan menu Admin.");
+            loginError.textContent = "Login sebagai admin lewat menu Admin.";
+            loginError.style.display = "block";
+            return;
+          }
+
+          const users = loadUsers();
+          const user = users.find(
+            (user) => user.username === u && user.password === p
+          );
+          if (!user) {
+            loginError.textContent = "Username atau password salah.";
+            loginError.style.display = "block";
+            return;
+          }
+          currentUser = user.username;
+          saveCurrentUser(currentUser);
+          alert(`Selamat datang, ${currentUser}!`);
+          formLogin.reset();
+          showSection("userpanel");
+        });
+
+        // Logout user
+        function logoutUser() {
+          currentUser = null;
+          saveCurrentUser("");
+          alert("Anda telah logout.");
+          showSection("home");
+        }
+
+        // Render food list on user panel with rating & comment inputs
+        function renderUserFoodList() {
+          if (!currentUser) return;
+          const foods = loadFoods();
+          userFoodListDiv.innerHTML = "";
+
+          if (foods.length === 0) {
+            userFoodListDiv.innerHTML = "<p>Tidak ada makanan terdaftar.</p>";
+            return;
+          }
+
+          foods.forEach((food) => {
+            // Find user rating and comment
+            const userRating = food.ratings
+              ? food.ratings.find((r) => r.user === currentUser)
+              : null;
+            const userComment = food.comments
+              ? food.comments.find((c) => c.user === currentUser)
+              : null;
+            // Average rating
+            const avgRating =
+              food.ratings && food.ratings.length > 0
+                ? (
+                    food.ratings.reduce((a, v) => a + v.score, 0) /
+                    food.ratings.length
+                  ).toFixed(1)
+                : "Belum Dinilai";
+            const starsCount =
+              food.ratings && food.ratings.length > 0
+                ? Math.round(avgRating)
+                : 0;
+            const stars = "★".repeat(starsCount) + "☆".repeat(5 - starsCount);
+
+            const card = document.createElement("article");
+            card.className = "food-card";
+            card.innerHTML = `
+        <img src="${food.photo}" alt="${food.name}" />
+        <div class="food-info">
+          <h3>${food.name}</h3>
+          <p class="desc">${food.description}</p>
+          <div class="rating-stars" title="Rata-rata rating: ${avgRating}">${stars} (${avgRating})</div>
+          <form class="rate-comment-form" data-food-id="${food.id}">
+            <label for="rating-${food.id}">Rating (1-5):</label>
+            <select id="rating-${food.id}" name="rating" required>
+              <option value="">-- Pilih --</option>
+              <option value="1" ${
+                userRating?.score === 1 ? "selected" : ""
+              }>1</option>
+              <option value="2" ${
+                userRating?.score === 2 ? "selected" : ""
+              }>2</option>
+              <option value="3" ${
+                userRating?.score === 3 ? "selected" : ""
+              }>3</option>
+              <option value="4" ${
+                userRating?.score === 4 ? "selected" : ""
+              }>4</option>
+              <option value="5" ${
+                userRating?.score === 5 ? "selected" : ""
+              }>5</option>
+            </select>
+
+            <label for="comment-${food.id}">Komentar:</label>
+            <textarea id="comment-${
+              food.id
+            }" name="comment" placeholder="Tulis komentarmu">${
+              userComment?.comment || ""
+            }</textarea>
+
+            <button type="submit">Kirim</button>
+          </form>
+          <div class="comments-list">
+            <strong>Komentar pengguna lain:</strong>
+            ${
+              food.comments && food.comments.length > 0
+                ? food.comments
+                    .filter((c) => c.user !== currentUser)
+                    .map(
+                      (c) =>
+                        `<p><span class="user">${c.user}</span>: ${c.comment}</p>`
+                    )
+                    .join("")
+                : "<p>Belum ada komentar lain.</p>"
+            }
+          </div>
+        </div>
+      `;
+            userFoodListDiv.appendChild(card);
+          });
+
+          // Attach submit handlers for all forms
+          const rateForms =
+            userFoodListDiv.querySelectorAll(".rate-comment-form");
+          rateForms.forEach((form) => {
+            form.addEventListener("submit", (e) => {
+              e.preventDefault();
+              const f = e.target;
+              const foodId = f.dataset.foodId;
+              const rating = parseInt(f.rating.value);
+              const comment = f.comment.value.trim();
+
+              if (!rating || rating < 1 || rating > 5) {
+                alert("Pilih rating antara 1 sampai 5.");
+                return;
+              }
+
+              // Update foods data
+              let foods = loadFoods();
+              const food = foods.find((fd) => fd.id === foodId);
+              if (!food) {
+                alert("Makanan tidak ditemukan.");
+                return;
+              }
+              // Update or add rating by current user
+              if (!food.ratings) food.ratings = [];
+              const rIndex = food.ratings.findIndex(
+                (r) => r.user === currentUser
+              );
+              if (rIndex >= 0) {
+                food.ratings[rIndex].score = rating;
+              } else {
+                food.ratings.push({ user: currentUser, score: rating });
+              }
+              // Update or add comment
+              if (!food.comments) food.comments = [];
+              const cIndex = food.comments.findIndex(
+                (c) => c.user === currentUser
+              );
+              if (comment.length > 0) {
+                if (cIndex >= 0) {
+                  food.comments[cIndex].comment = comment;
+                } else {
+                  food.comments.push({ user: currentUser, comment: comment });
+                }
+              } else if (cIndex >= 0) {
+                // Remove comment if empty
+                food.comments.splice(cIndex, 1);
+              }
+
+              saveFoods(foods);
+              alert("Terima kasih atas rating dan komentar Anda!");
+              renderUserFoodList();
+              renderHomeFoodList();
+            });
+          });
+        }
+
+        // NAV BUTTON EVENTS
+        navHome.addEventListener("click", () => showSection("home"));
+        navAdmin.addEventListener("click", () => showSection("admin"));
+        navLogin.addEventListener("click", () => showSection("login"));
+        linkRegister.addEventListener("click", (e) => {
+          e.preventDefault();
+          showSection("register");
+        });
+        linkLogin.addEventListener("click", (e) => {
+          e.preventDefault();
+          showSection("login");
+        });
+
+        // INITIALIZATION
+        function init() {
+          currentUser = loadCurrentUser();
+          isAdminLoggedIn = false; // Always false initially
+
+          renderHomeFoodList();
+
+          if (currentUser) {
+            showSection("userpanel");
+          } else {
+            showSection("home");
+          }
+        }
+
+        // Run init on page load
+        init();
+      })();
+    </script>
+  </body>
+</html>
